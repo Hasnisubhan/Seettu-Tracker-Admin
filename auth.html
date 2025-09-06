@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="CSS/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+
+  <!-- Header -->
+<div class="header">
+  <!-- Left: Logo -->
+  <img class="logo" src="icons/Logo.png">
+
+
+
+  <!-- Right: Dropdown -->
+  <div class="dropdown">
+    <button class="dropbtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    <div class="dropdown-content">
+      <a href="setup.html"><i class="fa-solid fa-gear"></i> Setup Plan</a>
+      <a id="printData"><i class="fa-solid fa-print"></i> Print</a>
+      <a href="about.html"><i class="fa-solid fa-info"></i> About</a>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+
+
+  <div class="auth-container">
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button id="loginTab" class="tab-btn active">Login</button>
+      <button id="createTab" class="tab-btn">Create</button>
+    </div>
+
+    <!-- Login Form (default active) -->
+    <form id="loginForm" class="auth-form active">
+      <h3>Login Seettu</h3>
+      <label for="createPhone">Enter ID</label>
+      <input type="text" id="loginId" placeholder="e.g: Jhone-3542" required>
+      <label for="createPhone">Password</label>
+      <input type="password" id="loginPass" placeholder="Enter your password" required>
+      <button type="submit">Login</button>
+      <p id="forgotPass" style="cursor:pointer; color: #0051a7; text-transform: none;">Forgot Password?</p>    
+      <!-- 🔽 Add your image here -->
+
+
+    </form>
+
+    <!-- Create Form -->
+    <form id="createForm" class="auth-form">
+      <h3>Create Seettu</h3>
+      <label for="createPhone">Phone Number</label>
+      <input type="text" id="createPhone" placeholder="+9477XXXXXXX" required>
+      <label for="createPhone">Enter Seettu Name</label>
+      <input type="text" id="createName" placeholder="Enter seettu / your name" required>
+      <label for="createPhone">Password</label>
+      <input type="password" id="createPass" placeholder="Enter your password" required>
+      <label for="createPhone">Confirm Password</label>
+      <input type="password" id="confirmPass" placeholder="Confirm your password" required>
+      <button type="submit">Create</button>
+    </form>
+
+  </div>
+
+      <!-- 🔽 Add your image here -->
+      <div class="setup-image">
+        <img src="images/Background-1.jpg" alt="Background">
+      </div>
+  <script src="JS/auth.js"></script>
+<script>
+  document.getElementById("forgotPass").addEventListener("click", () => {
+    window.location.href = "forgot.html";
+  });
+</script>
+
+</body>
+</html>

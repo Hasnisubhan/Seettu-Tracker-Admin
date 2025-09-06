@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Forgot Password - Seettu Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="CSS/style.css">
+  <link rel="icon" type="image/x-icon" href="icons/icon-192.ico">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .forgot-container {
+      width: 100%;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    h2 {
+      color: #034ba5;
+      margin-bottom: 15px;
+    }
+    p {
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    input[type="tel"] {
+      width: 93%;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: #034ba5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    button:hover {
+      background: #002f66;
+    }
+    .back-link {
+      display: block;
+      margin-top: 15px;
+      text-decoration: none;
+      font-size: 14px;
+      color: #034ba5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+<div class="header">
+  <!-- Left: Logo -->
+  <img class="logo" src="icons/Logo.png">
+
+
+
+  <!-- Right: Dropdown -->
+  <div class="dropdown">
+    <button class="dropbtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    <div class="dropdown-content">
+      <a href="setup.html"><i class="fa-solid fa-gear"></i> Setup Plan</a>
+      <a id="printData"><i class="fa-solid fa-print"></i> Print</a>
+      <a href="about.html"><i class="fa-solid fa-info"></i> About</a>
+    </div>
+  </div>
+</div>
+
+  </div>
+
+
+
+
+  <div class="forgot-container">
+
+  <!-- Back Button -->
+  <div style="width: 80px;">
+    <button onclick="history.back()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+  </div>
+
+    <h2>Seettu Tracker</h2>
+    <p>Enter the phone number you used when creating your account to request password recovery via WhatsApp</p>
+    
+    <input type="tel" id="phoneNumber" placeholder="Enter your phone number">
+    <button onclick="sendRequest()"><i class="fa-brands fa-whatsapp"></i> Request via WhatsApp</button>
+    
+
+  </div>
+
+  <script>
+    function sendRequest() {
+      const number = document.getElementById('phoneNumber').value.trim();
+      if (!number) {
+        alert('Please enter your phone number.');
+        return;
+      }
+      const message = encodeURIComponent(`*Hello Admin*, I would like to recover my Seettu Tracker App password for the phone number: *${number}*`);
+      const whatsappUrl = `https://wa.me/94784582025?text=${message}`;
+      window.open(whatsappUrl, "_blank");
+    }
+  </script>
+</body>
+</html>

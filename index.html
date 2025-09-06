@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Seettu Tracking Admin</title>
+  <link rel="stylesheet" href="CSS/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="icons/icon-192.ico">
+  <link rel="manifest" href="manifest.json">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Header -->
+<!-- Header -->
+<div class="header">
+  <!-- Left: Logo -->
+  <img class="logo" src="icons/Logo.png">
+
+  <!-- Center: Admin ID -->
+<div class="admin-id-container">
+  <span>ID: </span><span id="navbarAdminId" >-</span>
+  <i id="copyAdminId" class="fa-solid fa-copy" 
+     style="cursor: pointer; margin-left: 8px;"></i>
+</div>
+
+
+  <!-- Right: Dropdown -->
+  <div class="dropdown">
+    <button class="dropbtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    <div class="dropdown-content">
+      <a href="setup.html"><i class="fa-solid fa-edit"></i> Edit Seetu</a>
+  <a id="exportData"><i class="fa-solid fa-file-export"></i> Export</a>
+  <a id="importData"><i class="fa-solid fa-file-import"></i> Import</a>
+<!-- Hidden file input for import -->
+<input type="file" id="importFile" accept="application/json" style="display:none;">
+      <a href="about.html"><i class="fa-solid fa-info"></i> About</a>
+<a href="#" id="resetPaymentsa"><i class="fa-solid fa-rotate-left"></i> Logout</a>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+
+
+    <button id="uploadBtn"><i class="fa-solid fa-save"></i></button>
+
+<div class="above-content">    
+  <div class="info">
+    <span><i class="fa-regular fa-calendar"></i> <span id="planFrequency">-</span></span>
+    <span><i class="fa-solid fa-users"></i> <span id="planPeople">-</span></span>
+    <span><i class="fa-solid fa-coins"></i> <span id="planAmount">-</span></span>
+  </div>
+
+
+<!-- Navigation -->
+<div class="nav-controls">
+  <button id="prevRound" class="nav-btn">
+    <i class="fa-solid fa-caret-left"></i>
+  </button>
+  <span id="currentDate">-</span>
+  <button id="nextRound" class="nav-btn">
+    <i class="fa-solid fa-caret-right"></i>
+  </button>
+</div>
+
+
+</div>
+  <!-- Dynamic content -->
+  <div id="tabContent"></div>
+
+  <script src="JS/payments.js"></script>
+  <script src="JS/print.js"></script>
+  <script src="JS/ghist.js"></script>
+  <script src="JS/script.js"></script>
+
+
+<script>
+  const dropBtn = document.querySelector(".dropbtn");
+  const dropdownContent = document.querySelector(".dropdown-content");
+
+  dropBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdownContent.style.display =
+      dropdownContent.style.display === "block" ? "none" : "block";
+  });
+
+  document.addEventListener("click", () => {
+    dropdownContent.style.display = "none";
+  });
+</script>
+<script>
+  document.getElementById("viewSeettuBtn").addEventListener("click", () => {
+    window.location.href = "list.html";
+  });
+</script>
+<script>
+	if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then((reg) => console.log("Service worker registered.", reg))
+      .catch((err) => console.log("Service worker not registered.", err));
+  });
+}
+
+</script>
+
+
+</body>
+</html>

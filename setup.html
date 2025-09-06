@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Seettu Admin</title>
+  <link rel="stylesheet" href="CSS/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/x-icon" href="icons/icon-192.ico">
+
+
+</head>
+<body>
+
+
+<div class="header">
+  <img class="logo" src="icons/Logo.png">  
+
+  <!-- Center: Admin ID -->
+<div class="admin-id-container">
+  <span>ID: </span><span id="navbarAdminId" >-</span>
+  <i id="copyAdminId" class="fa-solid fa-copy" 
+     style="cursor: pointer; margin-left: 8px;"></i>
+</div>
+
+  </div>
+  <div class="dropdown">
+    <button class="dropbtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    <div class="dropdown-content">
+  <a href="index.html"><i class="fa-solid fa-area-chart"></i> Tracker</a>
+  <a id="exportData"><i class="fa-solid fa-file-export"></i> Export</a>
+  <a id="importData"><i class="fa-solid fa-file-import"></i> Import</a>
+<!-- Hidden file input for import -->
+<input type="file" id="importFile" accept="application/json" style="display:none;">
+      <a href="about.html"><i class="fa-solid fa-info"></i> About</a>
+<a href="#" id="resetPaymentsa"><i class="fa-solid fa-rotate-left"></i> Logout</a>
+    </div>
+  </div>
+</div>
+
+<span id="navbarAdminId"></span>
+
+
+
+<!-- Step 1: Plan Form -->
+<div id="step1" class="step active"><br>
+  <h2>Setup Seettu Plan</h2>
+  <form id="planForm">
+    <p align="center">Select Starting Date</p>
+    <input type="date" id="startDate" required>
+    <input type="number" id="peopleCount" placeholder="Number of People" required>
+    <input type="number" id="totalAmount" placeholder="Total Amount" required>
+    <select id="frequency" required>
+      <option value="">Select Frequency</option>
+      <option value="Daily">Daily</option>
+      <option value="Weekly">Weekly</option>
+      <option value="Monthly">Monthly</option>
+    </select>
+    <button type="submit" id="nextBtn">Next</button>
+  </form>
+    <!-- 🔽 Add your image here -->
+  <div class="setup-image">
+    <img src="images/Background.jpg" alt="Background">
+  </div>
+  <div id="planInfo" class="message"></div>
+</div>
+
+
+<!-- Step 2: Member Form -->
+<div id="step2" class="step"><br>
+  <h2>Add Members</h2>
+  <form id="registrationForm">
+    <select id="number" required></select>
+    <input type="text" id="name" placeholder="Full Name" required>
+    <input type="text" id="phone" placeholder="Phone Number (optional)">
+    <button type="submit">Register</button>
+  </form>
+
+  <div class="message" id="message"></div>
+
+  <h3>Registered Members</h3>
+  <table id="membersTable">
+    <thead>
+      <tr>
+        <th>Picked Number</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div style="display:flex; justify-content:space-between; margin-top:15px;">
+    <button id="backBtn" class="secondary-btn">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
+    <button id="goToPayments" class="primary-btn">
+      Next <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+
+
+
+
+  <script src="JS/script.js"></script>
+
+<script>
+  const dropBtn = document.querySelector(".dropbtn");
+  const dropdownContent = document.querySelector(".dropdown-content");
+
+  dropBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdownContent.style.display =
+      dropdownContent.style.display === "block" ? "none" : "block";
+  });
+
+  document.addEventListener("click", () => {
+    dropdownContent.style.display = "none";
+  });
+</script>
+<script>
+  document.getElementById("viewSeettuBtn").addEventListener("click", () => {
+    window.location.href = "list.html";
+  });
+</script>
+
+
+<script>
+
+  const goToPaymentsBtn = document.getElementById("goToPayments");
+if (goToPaymentsBtn) {
+  goToPaymentsBtn.addEventListener("click", () => {
+    window.location.href = "index.html"; // now index.html = payments.html
+  });
+}
+</script>
+
+<script>
+const backBtn = document.getElementById("backBtn");
+if (backBtn) {
+  backBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("step2").classList.remove("active");
+    document.getElementById("step1").classList.add("active");
+  });
+}
+</script>
+</body>
+</html>
