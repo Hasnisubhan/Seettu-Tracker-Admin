@@ -34,8 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- Upload to Gist (per Admin JSON file) ---
 async function uploadDataToGist(adminId, newData) {
-  const gistId = "38bc71bdc998169563fd4b7e47e159b8"; // your gist ID
-  const githubToken = "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"; // replace securely
+  const gistId = "1bec72536e04b329e842a128a2d6fc23"; // your gist ID
+  const githubToken = "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"; // replace securely
   const filename = `${adminId}.json`;
 
   try {
@@ -77,3 +77,4 @@ async function uploadDataToGist(adminId, newData) {
     alert("❌ Upload failed.");
   }
 }
+
