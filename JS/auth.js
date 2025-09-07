@@ -1,5 +1,3 @@
-const API_BASE = "https://seettu-api.vercel.app";
-
 // --- Switch tabs ---
 document.getElementById("loginTab").addEventListener("click", () => {
   document.getElementById("loginForm").classList.add("active");
@@ -22,7 +20,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const loginPass = document.getElementById("loginPass").value;
 
   try {
-    const res = await fetch(`${API_BASE}/api/get?adminId=${loginId}`);
+    const res = await fetch(`/api/get?adminId=${loginId}`);
     const data = await res.json();
 
     if (data.error) {
@@ -74,7 +72,7 @@ document.getElementById("createForm").addEventListener("submit", async (e) => {
   };
 
   try {
-    await fetch(`${API_BASE}/api/save`, {
+    await fetch("/api/save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ adminId, data: newData })
