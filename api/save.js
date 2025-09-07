@@ -4,7 +4,6 @@ export default async function handler(req, res) {
   }
 
   const { adminId, data } = req.body;
-
   if (!adminId || !data) {
     return res.status(400).json({ error: "Missing adminId or data" });
   }
@@ -18,19 +17,31 @@ export default async function handler(req, res) {
       method: "PATCH",
       headers: {
         Authorization: `token ${githubToken}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         files: {
-          [filename]: { content: JSON.stringify(data, null, 2) }
-        }
-      })
+          [filename]: {
+            content: JSON.stringify(data, null, 2),
+          },
+        },
+      }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("GitHub error:", errorText);
+      return res.status(response.status).json({
+        success: false,
+        error: "GitHub rejected request",
+        details: errorText,
+      });
+    }
+
     const result = await response.json();
-    res.status(200).json({ success: true, result });
+    return res.status(200).json({ success: true, result });
   } catch (err) {
     console.error("Save failed:", err);
-    res.status(500).json({ error: "Failed to save data" });
+    return res.status(500).json({ error: "Failed to save data" });
   }
 }
