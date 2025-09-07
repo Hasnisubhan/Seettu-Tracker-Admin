@@ -7,7 +7,6 @@ export default async function handler(req, res) {
     const gist = await response.json();
 
     if (list === "all") {
-      // return all Admin IDs (filenames without .json)
       const files = Object.keys(gist.files || {});
       const adminFiles = files.filter(f => f.endsWith(".json"));
       const adminIds = adminFiles.map(f => f.replace(".json", ""));
