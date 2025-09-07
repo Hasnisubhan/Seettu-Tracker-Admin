@@ -13,6 +13,29 @@ export default async function handler(req, res) {
   const filename = `${adminId}.json`;
 
   try {
+    // 1. Fetch old gist content
+    const gistRes = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { Authorization: `token ${githubToken}` },
+    });
+    const gist = await gistRes.json();
+
+    let oldContent = {};
+    if (gist.files && gist.files[filename]) {
+      try {
+        oldContent = JSON.parse(gist.files[filename].content);
+      } catch {}
+    }
+
+    // 2. Merge old + new data
+    const mergedData = {
+      phone: data.phone || oldContent.phone || "",
+      password: data.password || oldContent.password || "",
+      plan: data.plan || oldContent.plan || {},
+      members: data.members || oldContent.members || [],
+      payments: data.payments || oldContent.payments || {},
+    };
+
+    // 3. Save back to gist
     const response = await fetch(`https://api.github.com/gists/${gistId}`, {
       method: "PATCH",
       headers: {
@@ -22,7 +45,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         files: {
           [filename]: {
-            content: JSON.stringify(data, null, 2),
+            content: JSON.stringify(mergedData, null, 2),
           },
         },
       }),
