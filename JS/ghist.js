@@ -1,5 +1,3 @@
-const API_BASE = "https://seettu-api.vercel.app";
-
 document.addEventListener("DOMContentLoaded", () => {
   const adminId = localStorage.getItem("adminId");
   if (!adminId) {
@@ -32,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function uploadData(adminId, newData) {
   try {
-    const res = await fetch(`${API_BASE}/api/save`, {
+    const res = await fetch("/api/save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ adminId, data: newData })
