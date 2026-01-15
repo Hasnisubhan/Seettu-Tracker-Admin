@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const adminIdEl = document.getElementById("navbarAdminId");
   const copyBtn = document.getElementById("copyAdminId");
 
+  // Copy Admin ID when clicking the icon
   if (copyBtn) {
     copyBtn.addEventListener("click", () => {
       const id = adminIdEl.textContent.trim();
@@ -21,15 +22,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Set Admin ID from localStorage
   const adminId = localStorage.getItem("adminId");
   if (!adminId) {
-    window.location.href = "auth.html"; 
+    window.location.href = "auth.html"; // force login if no account
     return;
   } else {
     if (adminIdEl) {
       adminIdEl.textContent = adminId;
     }
   }
+
 
   // --- Export Data ---
   document.getElementById("exportData")?.addEventListener("click", () => {
@@ -78,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Load saved plan if exists ---
   const savedPlan = JSON.parse(localStorage.getItem("plan"));
   if (savedPlan && Object.keys(savedPlan).length > 0) {
+    // Only go to Step 2 if plan actually has fields
     document.getElementById("startDate").value = savedPlan.startDate || "";
     document.getElementById("peopleCount").value = savedPlan.peopleCount || "";
     document.getElementById("totalAmount").value = savedPlan.totalAmount || "";
@@ -104,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const contribution = totalAmount / peopleCount;
-    // The "15Days" value is captured here from the HTML select dropdown
     const plan = { peopleCount, totalAmount, frequency, contribution, startDate };
 
     const oldPlan = JSON.parse(localStorage.getItem("plan"));
@@ -113,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     localStorage.setItem("plan", JSON.stringify(plan));
+
     updateNumberDropdown();
 
     document.getElementById("step1").classList.remove("active");
@@ -139,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     members.push({ number, name, phone });
     localStorage.setItem("members", JSON.stringify(members));
+
     location.reload();
   });
 
@@ -189,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- Back Button ---
+  // --- Back Button (Step 2 → Step 1) ---
   const backBtn = document.getElementById("backBtn");
   if (backBtn) {
     backBtn.addEventListener("click", (e) => {
@@ -199,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Go to Payments ---
+  // --- Go to Payments (redirect to index.html) ---
   const goToPaymentsBtn = document.getElementById("goToPayments");
   if (goToPaymentsBtn) {
     goToPaymentsBtn.addEventListener("click", () => {
@@ -207,15 +212,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Logout Logic ---
+  // --- Upload to Gist ---
+  document.getElementById("uploadBtn")?.addEventListener("click", () => {
+    const plan = JSON.parse(localStorage.getItem("plan")) || {};
+    const members = JSON.parse(localStorage.getItem("members")) || [];
+    const payments = JSON.parse(localStorage.getItem("payments")) || {};
+
+    if (!plan || Object.keys(plan).length === 0 || members.length === 0) {
+      alert("⚠️ Please complete setup before uploading.");
+      return;
+    }
+
+    const newData = { plan, members, payments };
+    uploadDataToGist(adminId, newData);
+  });
+
+  // --- Initial Load ---
+  displayMembers();
+});
+
   document.getElementById("resetPaymentsa")?.addEventListener("click", (e) => {
-    e.preventDefault(); 
+    e.preventDefault(); // prevent page jump
+
     if (confirm("Are you sure you want to logout?")) {
+      // Clear all localStorage data for a fresh login
       localStorage.clear();
+
+      // Redirect back to login page
       window.location.href = "auth.html";
     }
   });
-
-  // Final load call
-  displayMembers();
-});
