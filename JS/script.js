@@ -4,19 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const membersTable = document.querySelector("#membersTable tbody");
   const message = document.getElementById("message");
   
-  // Custom Duration UI Logic
+  // Note: frequencySelect is kept for the dropdown, but customDaysInput logic is removed
   const frequencySelect = document.getElementById("frequency");
-  const customDaysInput = document.getElementById("customDays");
-
-  frequencySelect?.addEventListener("change", () => {
-    if (frequencySelect.value === "Custom") {
-      customDaysInput.style.display = "block";
-      customDaysInput.required = true;
-    } else {
-      customDaysInput.style.display = "none";
-      customDaysInput.required = false;
-    }
-  });
 
   // --- Check login ---
   const adminIdEl = document.getElementById("navbarAdminId");
@@ -73,13 +62,13 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("plan", JSON.stringify(data.plan));
           localStorage.setItem("members", JSON.stringify(data.members));
           localStorage.setItem("payments", JSON.stringify(data.payments));
-          alert("Data imported successfully!");
+          alert("✅ Data imported successfully!");
           location.reload();
         } else {
-          alert("Invalid file format.");
+          alert("❌ Invalid file format.");
         }
       } catch {
-        alert("Error reading file.");
+        alert("❌ Error reading file.");
       }
     };
     reader.readAsText(file);
@@ -88,16 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Load saved plan ---
   const savedPlan = JSON.parse(localStorage.getItem("plan"));
   if (savedPlan && Object.keys(savedPlan).length > 0) {
-    document.getElementById("startDate").value = savedPlan.startDate || "";
-    document.getElementById("peopleCount").value = savedPlan.peopleCount || "";
-    document.getElementById("totalAmount").value = savedPlan.totalAmount || "";
-    document.getElementById("frequency").value = savedPlan.frequency || "";
+    if (document.getElementById("startDate")) document.getElementById("startDate").value = savedPlan.startDate || "";
+    if (document.getElementById("peopleCount")) document.getElementById("peopleCount").value = savedPlan.peopleCount || "";
+    if (document.getElementById("totalAmount")) document.getElementById("totalAmount").value = savedPlan.totalAmount || "";
+    if (document.getElementById("frequency")) document.getElementById("frequency").value = savedPlan.frequency || "";
     
-    if (savedPlan.frequency === "Custom") {
-        customDaysInput.style.display = "block";
-        customDaysInput.value = savedPlan.customDays || "";
-    }
-
     document.getElementById("step1").classList.remove("active");
     document.getElementById("step2").classList.add("active");
     updateNumberDropdown();
@@ -111,15 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalAmount = parseFloat(document.getElementById("totalAmount").value);
     const frequency = document.getElementById("frequency").value;
     const startDate = document.getElementById("startDate").value;
-    const customDays = parseInt(document.getElementById("customDays").value) || 0;
 
-    if (!peopleCount || !totalAmount || !frequency || !startDate || (frequency === "Custom" && !customDays)) {
+    if (!peopleCount || !totalAmount || !frequency || !startDate) {
       alert("Please fill in all required fields.");
       return;
     }
 
     const contribution = totalAmount / peopleCount;
-    const plan = { peopleCount, totalAmount, frequency, contribution, startDate, customDays };
+    const plan = { peopleCount, totalAmount, frequency, contribution, startDate };
 
     const oldPlan = JSON.parse(localStorage.getItem("plan"));
     if (!oldPlan || Object.keys(oldPlan).length === 0) {
@@ -146,16 +129,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     members.push({ number, name, phone });
     localStorage.setItem("members", JSON.stringify(members));
-    location.reload();
+    
+    // Smooth update instead of full reload for better UX
+    registrationForm.reset();
+    displayMembers();
+    updateNumberDropdown();
   });
 
   function displayMembers() {
     let members = JSON.parse(localStorage.getItem("members")) || [];
+    if (!membersTable) return;
+    
     membersTable.innerHTML = "";
     members.forEach((m, idx) => {
       const row = document.createElement("tr");
       row.innerHTML = `<td>${m.number}</td><td>${m.name}</td><td>${m.phone}</td>
-        <td><button class="delete-btn" data-index="${idx}">Delete</button></td>`;
+        <td><button class="delete-btn" data-index="${idx}"><i class="fa-solid fa-trash"></i></button></td>`;
       membersTable.appendChild(row);
     });
 
@@ -164,7 +153,8 @@ document.addEventListener("DOMContentLoaded", () => {
         let members = JSON.parse(localStorage.getItem("members")) || [];
         members.splice(btn.dataset.index, 1);
         localStorage.setItem("members", JSON.stringify(members));
-        location.reload();
+        displayMembers();
+        updateNumberDropdown();
       });
     });
   }
@@ -174,6 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!plan) return;
     let members = JSON.parse(localStorage.getItem("members")) || [];
     const numberSelect = document.getElementById("number");
+    if (!numberSelect) return;
+
     numberSelect.innerHTML = "";
     for (let i = 1; i <= plan.peopleCount; i++) {
       if (!members.some((m) => parseInt(m.number) === i)) {
@@ -197,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("resetPaymentsa")?.addEventListener("click", (e) => {
     e.preventDefault();
-    if (confirm("Are you sure you want to logout?")) {
+    if (confirm("Are you sure you want to logout? This will clear your session.")) {
       localStorage.clear();
       window.location.href = "auth.html";
     }
