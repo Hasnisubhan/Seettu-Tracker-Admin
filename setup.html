@@ -50,13 +50,14 @@
     <input type="date" id="startDate" required>
     <input type="number" id="peopleCount" placeholder="Number of People" required>
     <input type="number" id="totalAmount" placeholder="Total Amount" required>
-	<select id="frequency" required>
-	  <option value="">Select Frequency</option>
-	  <option value="Daily">Daily</option>
-	  <option value="Weekly">Weekly</option>
-	  <option value="Monthly">Monthly</option>
-	  <option value="Custom">Custom Duration</option>
-	</select>
+<label for="frequency">Frequency</label>
+<select id="frequency" required>
+  <option value="Daily">Daily</option>
+  <option value="Weekly">Weekly</option>
+  <option value="Monthly">Monthly</option>
+  <option value="Half-Month">One-Half (Every 15 Days)</option>
+  <option value="Third-Month">One-Third (Every 10 Days)</option>
+</select>
 	
 	<input type="number" id="customDays" placeholder="Enter number of days" style="display:none;" min="1">
     <button type="submit" id="nextBtn">Next</button>
@@ -153,5 +154,6 @@ if (backBtn) {
 </script>
 </body>
 </html>
+
 
 
