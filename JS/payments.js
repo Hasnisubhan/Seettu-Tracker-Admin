@@ -8,58 +8,97 @@ if (!plan || members.length === 0) {
   window.location.href = "setup.html";
 } else {
   currentRound = getRoundForToday();
-  showRound(currentRound);
+  // Ensure the DOM is fully loaded before showing the round
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => showRound(currentRound));
+  } else {
+    showRound(currentRound);
+  }
 }
 
 const adminId = localStorage.getItem("adminId");
 if (!adminId) {
   window.location.href = "auth.html";
 } else {
-  document.getElementById("navbarAdminId").textContent = adminId;
+  const navIdDisplay = document.getElementById("navbarAdminId");
+  if (navIdDisplay) navIdDisplay.textContent = adminId;
 }
 
-function calculateRoundDate(startDate, round, plan) {
-  const date = new Date(startDate);
+/**
+ * UPDATED: Modular Month Logic
+ * Handles Half-Month (15-day split) and Third-Month (10-day split)
+ * anchored to the original start date day.
+ */
+function calculateRoundDate(startDateStr, round, plan) {
+  const start = new Date(startDateStr);
+  const date = new Date(startDateStr);
+  const startDay = start.getDate(); 
+
   if (plan.frequency === "Daily") {
     date.setDate(date.getDate() + round);
-  } else if (plan.frequency === "Weekly") {
+  } 
+  else if (plan.frequency === "Weekly") {
     date.setDate(date.getDate() + (7 * round));
-  } else if (plan.frequency === "Monthly") {
+  } 
+  else if (plan.frequency === "Monthly") {
     date.setMonth(date.getMonth() + round);
-  } else if (plan.frequency === "Custom" && plan.customDays) {
+  } 
+  else if (plan.frequency === "Half-Month") {
+    let monthsToAdd = Math.floor(round / 2);
+    let isSecondHalf = round % 2 === 1;
+    
+    date.setMonth(start.getMonth() + monthsToAdd);
+    if (isSecondHalf) {
+      date.setDate(startDay + 15);
+    } else {
+      date.setDate(startDay);
+    }
+  } 
+  else if (plan.frequency === "Third-Month") {
+    let monthsToAdd = Math.floor(round / 3);
+    let position = round % 3; // 0, 1, or 2
+    
+    date.setMonth(start.getMonth() + monthsToAdd);
+    if (position === 0) date.setDate(startDay);
+    else if (position === 1) date.setDate(startDay + 10);
+    else date.setDate(startDay + 20);
+  }
+  // Logic for the old "Custom" option (if still in use)
+  else if (plan.frequency === "Custom" && plan.customDays) {
     date.setDate(date.getDate() + (plan.customDays * round));
   }
+  
   return date;
 }
 
 function getRoundForToday() {
-  const startDate = new Date(plan.startDate);
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  for (let round = 0; round < plan.peopleCount; round++) {
-    const roundDate = calculateRoundDate(startDate, round, plan);
-    if (today < roundDate) {
-      return Math.max(0, round - 1);
-    }
-    if (
-      today.getFullYear() === roundDate.getFullYear() &&
-      today.getMonth() === roundDate.getMonth() &&
-      today.getDate() === roundDate.getDate()
-    ) {
-      return round;
+  for (let i = 0; i < plan.peopleCount; i++) {
+    const rd = calculateRoundDate(plan.startDate, i, plan);
+    const nextRd = calculateRoundDate(plan.startDate, i + 1, plan);
+    
+    rd.setHours(0, 0, 0, 0);
+    nextRd.setHours(0, 0, 0, 0);
+
+    // If today is within this round's range
+    if (today >= rd && today < nextRd) {
+      return i;
     }
   }
-  return plan.peopleCount - 1;
+  return 0; 
 }
 
 function showRound(round) {
-  const startDate = new Date(plan.startDate);
-  const roundDate = calculateRoundDate(startDate, round, plan);
+  const roundDate = calculateRoundDate(plan.startDate, round, plan);
   const dateStr = roundDate.toLocaleDateString("en-US", {
     day: "numeric", month: "short", year: "numeric"
   });
 
-  document.getElementById("currentDate").textContent = dateStr;
+  const dateDisplay = document.getElementById("currentDate");
+  if (dateDisplay) dateDisplay.textContent = dateStr;
+
   const member = members[round];
   if (!member) {
     tabContent.innerHTML = "<p>No member for this round.</p>";
@@ -69,7 +108,8 @@ function showRound(round) {
   const paidMembers = payments[round] || [];
   const paidCount = paidMembers.length;
   const total = members.length;
-  const paidAmount = paidCount * plan.contribution;
+  const contribution = parseFloat(plan.contribution || (plan.totalAmount / plan.peopleCount));
+  const paidAmount = paidCount * contribution;
   const remainingAmount = plan.totalAmount - paidAmount;
   const progressPercent = Math.round((paidCount / total) * 100);
 
@@ -77,7 +117,7 @@ function showRound(round) {
     <div class="receiver-card">
       <div class="round-badge">${round + 1}</div>
       <h3>${member.name} ${paidCount === total ? '<i class="fa-solid fa-circle-check completed-icon"></i>' : ''}</h3>
-      <p>Remaining: ${remainingAmount.toLocaleString()} / ${plan.totalAmount.toLocaleString()}</p>
+      <p>Remaining: ${remainingAmount.toLocaleString()}/= / ${parseFloat(plan.totalAmount).toLocaleString()}/=</p>
       <p>Paid: ${paidCount}/${total}</p>
       <div class="progress-bar"><span style="width:${progressPercent}%"></span></div>
     </div>
@@ -92,7 +132,7 @@ function showRound(round) {
     payerRow.className = `payer-row ${paid ? "paid" : "unpaid"}`;
     payerRow.innerHTML = `
       <span>${isReceiver ? '<i class="fa-solid fa-user-check"></i> ' : ''}${m.name}</span>
-      <span>${plan.contribution.toLocaleString()}/=</span>
+      <span>${contribution.toLocaleString()}/=</span>
       <i class="${paid ? 'fa-solid fa-square-check' : 'fa-regular fa-square'} checkbox-icon"
          data-round="${round}" data-number="${m.number}"></i>`;
     
@@ -111,27 +151,38 @@ function showRound(round) {
     });
     payList.appendChild(payerRow);
   });
+  updateNavButtons();
 }
 
 const prevBtn = document.getElementById("prevRound");
 const nextBtn = document.getElementById("nextRound");
 
 function updateNavButtons() {
-  prevBtn.disabled = currentRound === 0;
-  nextBtn.disabled = currentRound === plan.peopleCount - 1;
+  if (prevBtn) prevBtn.disabled = currentRound === 0;
+  if (nextBtn) nextBtn.disabled = currentRound === plan.peopleCount - 1;
 }
 
-prevBtn.addEventListener("click", () => {
-  if (currentRound > 0) { currentRound--; showRound(currentRound); updateNavButtons(); }
+prevBtn?.addEventListener("click", () => {
+  if (currentRound > 0) { 
+    currentRound--; 
+    showRound(currentRound); 
+  }
 });
 
-nextBtn.addEventListener("click", () => {
-  if (currentRound < plan.peopleCount - 1) { currentRound++; showRound(currentRound); updateNavButtons(); }
+nextBtn?.addEventListener("click", () => {
+  if (currentRound < plan.peopleCount - 1) { 
+    currentRound++; 
+    showRound(currentRound); 
+  }
 });
 
+// Update Header Summary
 if (plan) {
-  document.getElementById("planFrequency").textContent = plan.frequency;
-  document.getElementById("planPeople").textContent = plan.peopleCount;
-  document.getElementById("planAmount").textContent = plan.totalAmount.toLocaleString() + "/=";
+  const freqEl = document.getElementById("planFrequency");
+  const peopleEl = document.getElementById("planPeople");
+  const amountEl = document.getElementById("planAmount");
+
+  if (freqEl) freqEl.textContent = plan.frequency;
+  if (peopleEl) peopleEl.textContent = plan.peopleCount;
+  if (amountEl) amountEl.textContent = parseFloat(plan.totalAmount).toLocaleString() + "/=";
 }
-updateNavButtons();
